@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import { UserModel } from './models/User';
+import { FileModel } from './models/File';
 
 const port = 3000;
 const server = express();
@@ -19,6 +20,10 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: "express"
 });
+
+const myFileModel = new FileModel(pool)
+
+myFileModel.createFile
 
 server.use(bodyParser.urlencoded({ extended: true }));
 

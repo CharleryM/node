@@ -1,30 +1,35 @@
-import mysql from 'mysql2/promise';
+import mysql, { Pool } from 'mysql2/promise';
 
 export class UserModel {
+    pool: Pool
 
-    static async createUser(userData) {
+    constructor(pool: Pool) {
+        this.pool = pool
+    }
+
+    async createUser(userData) {
         try {
             const { username, email, files } = userData;
-            return await pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [username, email, files]).insertId;
+            return await this.pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [username, email, files]).insertId;
         } catch (error) {
             console.error("Erreur lors de la création de l'utilisateur :", error);
             throw error;
         }
     }
     
-    static async getUserById(id) {
+    async getUserById(id) {
         try {
-            return( await pool.query('SELECT * FROM users WHERE id = ?', [id])[0]); 
+            return( await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]); 
         } catch (error) {
             console.error("Erreur lors de la récupération de l'utilisateur :", error);
             throw error;
         }
     }
 
-    static async updateUser(id, userData) {
+    async updateUser(id, userData) {
         try {
             const { username, email, files } = userData;
-            await pool.query('UPDATE users SET username = ?, email = ?, files = ? WHERE id = ?', [username, email, files, id]);
+            await this.pool.query('UPDATE users SET username = ?, email = ?, files = ? WHERE id = ?', [username, email, files, id]);
             return true;
         } catch (error) {
             console.error("Erreur lors de la mise à jour de l'utilisateur :", error);
@@ -32,9 +37,9 @@ export class UserModel {
         }
     }
 
-    static async deleteUser(id) {
+    async deleteUser(id) {
         try {
-            await pool.query('DELETE FROM users WHERE id = ?', [id]);
+            await this.pool.query('DELETE FROM users WHERE id = ?', [id]);
             return true;
         } catch (error) {
             console.error("Erreur lors de la suppression de l'utilisateur :", error);
