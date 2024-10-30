@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
+import { UserModel } from './models/User';
 
 const port = 3000;
 const server = express();
