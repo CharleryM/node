@@ -6,6 +6,7 @@ import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import { UserModel } from './models/User';
 import { FileModel } from './models/File';
+import { registerUser, loginUser } from './controllers/AuthController';
 
 const port = 3000;
 const server = express();
@@ -20,8 +21,8 @@ const pool = mysql.createPool({
   database: "express"
 })
 
-const myFileModel = new UserModel(pool)
-myFileModel.createUser({ username: "klgs", email: "toto", password: "klgfdslg" }).then(data => console.log(data))
+// const myFileModel = new UserModel(pool)
+// myFileModel.createUser({ username: "klgs", email: "toto", password: "klgfdslg" }).then(data => console.log(data))
 
 server.use(bodyParser.urlencoded({ extended: true }));
 
@@ -35,50 +36,7 @@ server.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-server.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const connection = await pool.getConnection();
-    await connection.query(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [username, email, hashedPassword]
-    );
-    connection.release();
-
-    res.send('Inscription réussie !');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Erreur lors de l\'inscription');
-  }
-});
-
-server.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const connection = await pool.getConnection();
-    const rows = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
-    connection.release();
-
-    if (rows.length === 0) {
-      return res.status(401).send('Utilisateur non trouvé');
-    }
-
-    const user = rows[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      return res.status(401).send('Mot de passe incorrect');
-    }
-
-    res.send('Connexion réussie !');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erreur lors de la connexion");
-  }
-});
+server.post('/register', registerUser);
+server.post('/login', loginUser);
 
 server.listen(port, () => console.log(`Yeah, je tourne sur le port ${port}`));

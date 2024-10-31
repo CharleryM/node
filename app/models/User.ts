@@ -22,6 +22,17 @@ export class UserModel {
         }
     }
 
+    async getUserByEmail(email: string) {
+        try {
+          const [rows] = await this.pool.query('SELECT * FROM users WHERE email = ?', [email]);
+          console.log(rows)
+          return rows[0];
+        } catch (error) {
+          console.error("Erreur lors de la récupération de l'utilisateur par email :", error);
+          throw error;
+        }
+      }
+
     async getUserById(id) {
         try {
             return (await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]);
