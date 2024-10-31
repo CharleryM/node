@@ -25,5 +25,7 @@ services:
             database:
                 condition: service_healthy
         volumes:
-            - ./app:/app
-        command: 'sh -c "cd /app && npm run start"'
+            - ./app:/app   # Monte tout le dossier app
+            - /app/node_modules # Volume anonyme pour éviter d'utiliser le node_modules de l'hôte
+        working_dir: /app
+        command: 'sh -c "cd /app && npm i && npm run start"'
