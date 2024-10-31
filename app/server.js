@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 import { UserModel } from './models/User';
 import { FileModel } from './models/File';
 import { registerUser, loginUser } from './controllers/AuthController';
-import { uploadFile, downloadFile, shareFile } from './controllers/FileController'
+import { uploadFile, downloadFile, shareFile } from './controllers/FileController';
  
 const port = 3000;
 const server = express();
