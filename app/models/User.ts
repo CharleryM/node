@@ -1,4 +1,4 @@
-import mysql, { Pool } from 'mysql2/promise';
+import mysql, { Connection, Pool } from 'mysql2/promise';
 
 export class UserModel {
     pool: Pool
@@ -9,17 +9,22 @@ export class UserModel {
 
     async createUser(userData) {
         try {
-            const { username, email, files } = userData;
-            return await this.pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [username, email, files]).insertId;
+            const { username, email, password } = userData;
+
+           const [result] = await this.pool.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, password])
+
+            console.log(result)
+
+            return result.insertId;
         } catch (error) {
             console.error("Erreur lors de la création de l'utilisateur :", error);
             throw error;
         }
     }
-    
+
     async getUserById(id) {
         try {
-            return( await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]); 
+            return (await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]);
         } catch (error) {
             console.error("Erreur lors de la récupération de l'utilisateur :", error);
             throw error;

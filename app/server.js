@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import { UserModel } from './models/User';
 import { FileModel } from './models/File';
@@ -15,15 +15,13 @@ const __dirname = path.dirname(__filename);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
-  port: 3006,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: "express"
-});
+})
 
-const myFileModel = new FileModel(pool)
-
-myFileModel.createFile
+const myFileModel = new UserModel(pool)
+myFileModel.createUser({ username: "klgs", email: "toto", password: "klgfdslg" }).then(data => console.log(data))
 
 server.use(bodyParser.urlencoded({ extended: true }));
 
