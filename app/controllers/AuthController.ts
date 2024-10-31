@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import mysql from 'mysql2/promise';
 import { UserModel } from '../models/User';
@@ -14,7 +15,10 @@ export async function registerUser(req: Request, res: Response) {
   const { username, email, password } = req.body;
 
   try {
-    const userId = await userModel.createUser({ username, email, password });
+   
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userId = await userModel.createUser({ username, email, password: hashedPassword });
+    
     res.redirect('/dashboard');
     console.log(`Inscription réussie ! Utilisateur ID : ${userId} ${username} ${password} ${email}`);
   } catch (error) {
@@ -29,7 +33,8 @@ export async function loginUser(req: Request, res: Response) {
   try {
     const user = await userModel.getUserByEmail(email);
 
-    if (user && user.password === password) {
+   
+    if (user && await bcrypt.compare(password, user.password)) {
       res.redirect('/dashboard');
       console.log(`Connexion réussie ! Bienvenue, ${user.username}`);
     } else {

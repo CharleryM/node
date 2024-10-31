@@ -46,7 +46,7 @@ export async function shareFile(req: Request, res: Response) {
     if (!file) {
       return res.status(404).send("Fichier non trouvé");
     }
-    const shareLink = ${req.protocol}://${req.get('host')}/download/${id};
+    const shareLink = `${req.protocol}://${req.get('host')}/download/${id}`;
     res.json({ message: 'Lien de partage créé', link: shareLink });
   } catch (error) {
     console.error("Erreur lors de la création du lien de partage :", error);
