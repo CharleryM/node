@@ -12,30 +12,37 @@
   <h2>Bienvenue, <span id="username">[Nom de l'utilisateur]</span>!</h2>
   <p id="fileStatus" class="mt-3">Aucun fichier enregistré.</p>
 
-  <ul id="fileList" class="list-group mb-3" style="display: none;">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>Nom du fichier</span>
-      <div>
-        <button class="btn btn-primary btn-sm me-2" onclick="shareFile('fileId')">Partager</button>
-        <button class="btn btn-secondary btn-sm me-2" onclick="downloadFile('fileId')">Télécharger</button>
-      </div>
-    </li>
-  </ul>
-
-  <input type="file" class="btn btn-success" onclick="addFile()">Ajouter un fichier</input>
+  <ul id="fileList" class="list-group mb-3" style="display: none;"></ul>
+  <input type="file" id="fileInput" class="form-control mb-3">
+  <button class="btn btn-success" onclick="addFile()">Ajouter un fichier</button>
 </div>
 
 <script>
-  document.getElementById("username").textContent = "blablalba";
+  // Fonction pour charger les fichiers de l'utilisateur
+  async function loadFiles() {
+    try {
+      const response = await fetch('/api/files'); // Ajoute une route dans fileController si nécessaire
+      const data = await response.json();
 
+      if (data.files && data.files.length > 0) {
+        displayFiles(data.files);
+      } else {
+        document.getElementById("fileStatus").textContent = "Aucun fichier enregistré.";
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des fichiers :", error);
+    }
+  }
+
+  // Fonction pour afficher la liste des fichiers
   function displayFiles(files) {
     const fileList = document.getElementById("fileList");
-    const fileStatus = document.getElementById("fileStatus");
+    fileList.innerHTML = ''; // Réinitialiser la liste
 
     if (files.length > 0) {
       fileList.style.display = "block";
-      fileStatus.style.display = "none";
-      
+      document.getElementById("fileStatus").style.display = "none";
+
       files.forEach(file => {
         const fileItem = document.createElement("li");
         fileItem.className = "list-group-item d-flex justify-content-between align-items-center";
@@ -49,27 +56,59 @@
         fileList.appendChild(fileItem);
       });
     } else {
-      fileStatus.textContent = "Aucun fichier enregistré.";
+      document.getElementById("fileStatus").textContent = "Aucun fichier enregistré.";
     }
   }
 
-  const userFiles = [
-    { id: '1', name: 'Document1.pdf' },
-    { id: '2', name: 'Document2.docx' }
-  ];
-  displayFiles(userFiles);
+  // Fonction pour ajouter un fichier
+  async function addFile() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
 
-  function shareFile(fileId) {
-    alert(`Partager le fichier avec l'ID : ${fileId}`);
+    if (!file) return alert("Sélectionnez un fichier à télécharger");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert("Fichier ajouté avec succès");
+        loadFiles(); // Recharger la liste des fichiers
+      } else {
+        console.error("Erreur lors de l'ajout du fichier :", data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du fichier :", error);
+    }
   }
 
+  // Fonction pour partager un fichier
+  async function shareFile(fileId) {
+    try {
+      const response = await fetch(`/api/share/${fileId}`);
+      const data = await response.json();
+      if (response.ok) {
+        alert(`Lien de partage : ${data.link}`);
+      } else {
+        console.error("Erreur lors de la création du lien de partage :", data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la création du lien de partage :", error);
+    }
+  }
+
+  // Fonction pour télécharger un fichier
   function downloadFile(fileId) {
-    alert(`Télécharger le fichier avec l'ID : ${fileId}`);
+    window.location.href = `/api/download/${fileId}`;
   }
 
-  function addFile() {
-    console.log("Ajouter un nouveau fichier");
-  }
+  // Charger les fichiers au démarrage
+  loadFiles();
 </script>
 
 </body>

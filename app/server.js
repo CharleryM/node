@@ -7,7 +7,8 @@ import bcrypt from 'bcrypt';
 import { UserModel } from './models/User';
 import { FileModel } from './models/File';
 import { registerUser, loginUser } from './controllers/AuthController';
-
+import { uploadFile, downloadFile, shareFile } from './controllers/FileController'
+ 
 const port = 3000;
 const server = express();
 
@@ -39,4 +40,8 @@ server.get('/dashboard', (req, res) => {
 server.post('/register', registerUser);
 server.post('/login', loginUser);
 
-server.listen(port, () => console.log(`Yeah, je tourne sur le port ${port}`));
+server.post('/api/updoad', uploadFile);
+server.get('/api/download/:id', downloadFile);
+server.get('/api/share/:id', shareFile); 
+
+server.listen(port, () => console.log(`Youpi ça marche ! Je tourne sur le port 456789... euh non ${port}, t'as eu peur hein ? Oui je m'amuse comme je peux`));

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import mysql from 'mysql2/promise';
-
 import { UserModel } from '../models/User';
 
 const pool = mysql.createPool({
@@ -16,8 +15,8 @@ export async function registerUser(req: Request, res: Response) {
 
   try {
     const userId = await userModel.createUser({ username, email, password });
-
-    res.send(`Inscription réussie ! Utilisateur ID : ${userId} ${username} ${password} ${email}`);
+    res.redirect('/dashboard');
+    console.log(`Inscription réussie ! Utilisateur ID : ${userId} ${username} ${password} ${email}`);
   } catch (error) {
     console.error("Erreur lors de l'inscription :", error);
     res.status(500).send("Erreur lors de l'inscription");
@@ -31,7 +30,8 @@ export async function loginUser(req: Request, res: Response) {
     const user = await userModel.getUserByEmail(email);
 
     if (user && user.password === password) {
-      res.send(`Connexion réussie ! Bienvenue, ${user.username}`);
+      res.redirect('/dashboard');
+      console.log(`Connexion réussie ! Bienvenue, ${user.username}`);
     } else {
       res.status(401).send("Email ou mot de passe incorrect");
     }
