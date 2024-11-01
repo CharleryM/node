@@ -8,58 +8,31 @@ export class UserModel {
     }
 
     async createUser(userData) {
-        try {
-            const { username, email, password } = userData;
+        const { username, email, password } = userData;
+        const [result] = await this.pool.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, password])
 
-           const [result] = await this.pool.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, password])
-
-            console.log(result)
-
-            return result.insertId;
-        } catch (error) {
-            console.error("Erreur lors de la création de l'utilisateur :", error);
-            throw error;
-        }
+        console.log(result)
+        return result.insertId;
     }
 
     async getUserByEmail(email: string) {
-        try {
-          const [rows] = await this.pool.query('SELECT * FROM users WHERE email = ?', [email]);
-          console.log(rows)
-          return rows[0];
-        } catch (error) {
-          console.error("Erreur lors de la récupération de l'utilisateur par email :", error);
-          throw error;
-        }
-      }
+        const [rows] = await this.pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        console.log(rows)
+        return rows[0];
+    }
 
     async getUserById(id) {
-        try {
-            return (await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]);
-        } catch (error) {
-            console.error("Erreur lors de la récupération de l'utilisateur :", error);
-            throw error;
-        }
+        return (await this.pool.query('SELECT * FROM users WHERE id = ?', [id])[0]);
     }
 
     async updateUser(id, userData) {
-        try {
-            const { username, email, files } = userData;
-            await this.pool.query('UPDATE users SET username = ?, email = ?, files = ? WHERE id = ?', [username, email, files, id]);
-            return true;
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour de l'utilisateur :", error);
-            throw error;
-        }
+        const { username, email, files } = userData;
+        await this.pool.query('UPDATE users SET username = ?, email = ?, files = ? WHERE id = ?', [username, email, files, id]);
+        return true;
     }
 
     async deleteUser(id) {
-        try {
-            await this.pool.query('DELETE FROM users WHERE id = ?', [id]);
-            return true;
-        } catch (error) {
-            console.error("Erreur lors de la suppression de l'utilisateur :", error);
-            throw error;
-        }
+        await this.pool.query('DELETE FROM users WHERE id = ?', [id]);
+        return true;
     }
 }

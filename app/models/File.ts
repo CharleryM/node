@@ -9,8 +9,8 @@ export class FileModel {
 
     async createFile(fileData){
         try {
-            const { fileName, size, owner } = fileData;
-            return await this.pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [fileName, size, owner]).insertId;
+            const { fileName, size, ownerId } = fileData;
+            return await this.pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [fileName, size, ownerId]).insertId;
         } catch (error) {
             console.error("Erreur lors de la création de l'utilisateur :", error);
             throw error;

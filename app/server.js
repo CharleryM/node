@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
@@ -22,8 +23,18 @@ const pool = mysql.createPool({
   database: "express"
 })
 
-// const myFileModel = new UserModel(pool)
-// myFileModel.createUser({ username: "klgs", email: "toto", password: "klgfdslg" }).then(data => console.log(data))
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, '/tmp/uploads')
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+//     cb(null, uniqueSuffix + '-' + file.original )
+//   }
+// })
+
+// const upload = multer({ storage: storage })
+
 
 server.use(bodyParser.urlencoded({ extended: true }));
 
@@ -40,8 +51,8 @@ server.get('/dashboard', (req, res) => {
 server.post('/register', registerUser);
 server.post('/login', loginUser);
 
-server.post('/api/updoad', uploadFile);
-server.get('/api/download/:id', downloadFile);
-server.get('/api/share/:id', shareFile); 
+// server.post('/api/updoad', upload.single('upload'), uploadFile);
+// server.get('/api/download/:id', downloadFile);
+// server.get('/api/share/:id', shareFile); 
 
-server.listen(port, () => console.log(`Youpi ça marche ! Je tourne sur le port 456789... euh non ${port}, t'as eu peur hein ? Oui je m'amuse comme je peux`));
+server.listen(port, () => console.log(`OK sur le port : ${port}`));
