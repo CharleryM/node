@@ -1,5 +1,6 @@
 import mysql, { Pool } from 'mysql2/promise';
 
+
 export class FileModel {
     pool: Pool
 
@@ -8,8 +9,8 @@ export class FileModel {
     }
 
     async createFile(fileData){
-            const { fileName, size, ownerId } = fileData;
-            const [result] = await this.pool.query('INSERT INTO users (username, email, files) VALUES (?, ?)', [fileName, size, ownerId])
+            const { userId, fileName, size } = fileData;
+            const [result] = await this.pool.query('INSERT INTO files (userId, fileName, size ) VALUES (?, ?, ?)', [userId, fileName, size])
             return result.insertId;
     }
 

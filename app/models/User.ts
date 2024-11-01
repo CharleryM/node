@@ -1,4 +1,4 @@
-import mysql, { Connection, Pool } from 'mysql2/promise';
+import { Pool } from 'mysql2/promise';
 
 export class UserModel {
     pool: Pool
