@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import mysql from 'mysql2/promise'
 import { FileModel } from '../models/File'
+import path from 'path';
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -21,7 +22,7 @@ export async function uploadFile(req: Request, res: Response) {
   }
 }
 
-export async function downloadFile(req: Request, res: Response) {
+export const downloadFile: RequestHandler = async (req: Request, res: Response) =>{
   const { id } = req.params;
   try {
     const file = await fileModel.getFileById(id);

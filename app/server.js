@@ -5,10 +5,9 @@ import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
-import { UserModel } from './models/User';
-import { FileModel } from './models/File';
 import { registerUser, loginUser } from './controllers/AuthController';
 import { uploadFile, downloadFile, shareFile } from './controllers/FileController';
+import {fileRouter} from './routes/FileRoute'
  
 const port = 3000;
 const server = express();
@@ -16,7 +15,7 @@ const server = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const pool = mysql.createPool({
+export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -40,13 +39,17 @@ server.use(bodyParser.urlencoded({ extended: true }));
 
 server.use(express.static(path.join(__dirname, 'public')));
 
-server.get('/', (req, res) => {
+server.get('/', (_, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-server.get('/dashboard', (req, res) => {
+server.use('/file', fileRouter);
+
+server.get('/dashboard', (_, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
+
+
 
 server.post('/register', registerUser);
 server.post('/login', loginUser);
